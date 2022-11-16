@@ -1,0 +1,135 @@
+# DEVELOPED BY KAMLESH KOLI
+
+# asiinging commandline variables to another variables that make sense
+name=$1
+url=$2
+
+# making extra dw file to avoid ls error
+echo . > 0.dw
+
+# changing path to current directory
+cd .
+
+# function for spaces
+
+l()
+{
+   echo 
+ }
+
+# checking Complete directory exist or not
+
+check_dir()
+{
+	if [ ! -d Completed ]
+	then
+		mkdir Completed
+	fi
+}
+
+#function to list remaining downloads
+
+ls_dw()
+{
+l
+echo -e "\e[94mremaining downloads"
+l
+echo "....................."
+echo -e "\e[1m\e[92m\e[1m"
+ls  *.dw
+l
+echo -e "\e[0m....................."
+l
+
+# ls error is avoided so removing 0.dw
+
+rm 0.dw
+}
+
+# commandline argument not entered correctly so getting user input
+input_error()
+{
+
+if [ -z $1 ]
+then 
+l
+ echo -e "...........\e[32mInstructions\e[0m............"
+l 
+echo -e  "\e[36mNAME and url must not enclosed in double quotes"
+echo "............................."
+l
+read -p "Enter name of file ::  " name
+l
+read -p "Valid url of file      ::  " url
+fi
+
+# creating part for future use
+partial_dw="$name.dw"
+
+echo -e "\e[0m"
+}
+
+
+# part text variable
+
+	part_text="
+
+ rm -f wget-log*
+ \nif [ -z \$1 ]\n
+ then\n
+ speed=10000m\n
+ else\n
+ speed=\$1\n
+ fi\n  
+ if [ ! -d Completed ]\n
+	then\n
+   mkdir Completed\n
+   fi\n
+ 
+ 
+	wget --limit-rate=\$speed -O ".$1" -c \"$2\"\n
+
+	if [ \$? -eq 0 ]\n
+	then\n
+	mv ".$1" $1\n
+        mv $1  Completed\n
+	rm $name.dw\n
+       echo \n
+       echo \n
+       echo  \"$1 is Downloaded Successfully\"\n
+	echo \n
+       echo \n
+fi\n"
+	
+
+# checking for commandline arguments entered correctly 
+
+input_error $2
+
+# changing mode of bash
+
+echo -e $part_text > $partial_dw
+
+chmod +x $partial_dw
+check_dir
+
+
+# starting download
+
+# listing all partially downloading files
+
+ls_dw
+
+wget -O ".$name" -c $url
+
+
+# moving downloaded into Completed directory and removing part file as downloading completed
+mv ".$name" $name
+mv $name Completed
+rm $partial_dw
+l
+l
+echo -e "\e[34m$name\e[35m is Downloaded Successfully\e[0m"
+l
+
+ 
