@@ -1,0 +1,125 @@
+# DEVELOPED BY KAMLESH KOLI
+
+# making extra dw file to avoid ls error
+echo . > 0.dw
+
+# changing path to current directory
+cd .
+
+# creating part for future use
+part="$1.dw"
+
+# function for spaces
+
+space()
+{
+   echo 
+   echo
+   echo
+}
+
+# checking Complete directory exist or not
+
+check_dir()
+{
+	if [ ! -d Completed ]
+	then
+		mkdir Completed
+	fi
+}
+
+#function to list remaining downloads
+
+ls_dw()
+{
+space
+echo -e "\e[94mremaining downloads"
+echo ""
+echo "....................."
+echo -e "\e[1m\e[92m\e[1m"
+cd .
+ls  *.dw
+rm 0.dw
+space
+echo -e "\e[0m....................."
+space
+
+}
+
+# checking if any commandline argument not present
+error()
+{
+
+if [ -z $1 ]
+then 
+ 
+  space
+  echo -e "        \e[1m\e[91mERROR \e[0m"
+  space
+  exit
+
+fi
+}
+
+
+# part text variable
+
+	part_text="
+
+ if [ -z \$1 ]\n
+ then\n
+ speed=1000m\n
+ else\n
+ speed=\$1\n
+ fi\n  
+ if [ ! -d Completed ]\n
+	then\n
+   mkdir Completed\n
+   fi\n
+ 
+ 
+	wget --limit-rate=\$speed -O ".$1" -c \"$2\"\n
+
+	if [ \$? -eq 0 ]\n
+	then\n
+	mv ".$1" $1\n
+        mv $1  Completed\n
+	rm $part\n
+       echo \"\"\n
+       echo \"\"\n
+       echo  \"$1 is Downloaded Successfully\"\n
+	echo \"\"\n
+       echo \"\"\n
+fi\n"
+	
+
+# listing all partially downloaded files
+
+ls_dw
+
+
+# checking for errors
+
+error $2
+
+# changing mode of bash
+
+echo -e $part_text > $part
+
+
+chmod +x $part
+check_dir
+
+# starting download
+
+wget -O ".$1" -c $2
+
+
+# moving downloaded into Completed directory and removing part file as downloading completed
+mv ".$1" $1
+mv $1 Completed
+rm $part 
+space
+echo "$1 is Downloaded Successfully"
+space
+ 
